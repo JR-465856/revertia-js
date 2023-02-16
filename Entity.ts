@@ -4,12 +4,50 @@ abstract class Entity {
 }
 
 namespace Entity {
+    // Animation
+    export class Animation {
+        private parent: Sprite;
+        private images: Array<Image>;
+        private label: string;
+
+        private flippedX: boolean = false;
+        private flippedY: boolean = false;
+
+        private interval = 500;
+        private looping = false;
+
+        constructor(label: string) {
+            this.label = label;
+        }
+
+        public play() {
+
+        }
+
+        public getParent(): Sprite { return this.parent; }
+        public setParent(parent: Sprite): void { this.parent = parent; }
+
+        public getFrames(): Array<Image> { return this.images; }
+        public setFrames(images: Array<Image>): void { this.images = images; }
+
+        public getInterval(): number { return this.interval; }
+        public setInterval(interval: number): void { this.interval = interval; }
+
+        public getLooping(): boolean { return this.looping; }
+        public setLooping(looping: boolean): void { this.looping = looping; }
+
+        public getFlipX(): boolean { return this.flippedX; }
+        public getFlipY(): boolean { return this.flippedY; }
+        public setFlipX(flippedX: boolean): void { this.flippedX = flippedX; }
+        public setFlipY(flippedY: boolean): void { this.flippedY = flippedY; }
+    }
+
     // Hitbox
     export class Hitbox {
         private static hitboxList: Array<Entity.Hitbox>;
         private static hitboxKind: number = SpriteKind.create();
         private static displayKind: number = SpriteKind.create();
-        
+
         private boundary: Sprite;
         private parent: Sprite;
 
@@ -20,7 +58,7 @@ namespace Entity {
         // parent:Sprite     - The sprite to attach to the hitbox for decoration
         // size:Coordinate   - The size of the hitbox
         // offset:Coordinate -
-        constructor(parent:Sprite, size:Coordinate=new Coordinate(1,1), offset:Coordinate=new Coordinate(0,0)) {
+        constructor(parent: Sprite, size: Coordinate = new Coordinate(1, 1), offset: Coordinate = new Coordinate(0, 0)) {
             // Load hitbox hitboxList
             if (Entity.Hitbox.hitboxList == undefined) Entity.Hitbox.hitboxList = [];
 
@@ -39,21 +77,21 @@ namespace Entity {
         }
 
         // Sprite functions
-        public getSprite(): Sprite { return this.boundary;}
-        public getParent(): Sprite { return this.parent;}
-        public setParent(parent:Sprite): void { this.parent = parent;}
+        public getSprite(): Sprite { return this.boundary; }
+        public getParent(): Sprite { return this.parent; }
+        public setParent(parent: Sprite): void { this.parent = parent; }
         // Size and offset
-        public getSize(): Coordinate { return this.size;}
-        public getOffset(): Coordinate { return this.offset;}
-        public setOffset(offset:Coordinate) { this.offset = offset;}
+        public getSize(): Coordinate { return this.size; }
+        public getOffset(): Coordinate { return this.offset; }
+        public setOffset(offset: Coordinate) { this.offset = offset; }
 
         // Deregister
         // Removes a Hitbox, no longer recognizing it in the static sense
         // WARNING: Must be called on removal or the class may become unstable!
         public deregister(): void {
             let index = -1;
-            let found = Entity.Hitbox.hitboxList.find(function(obj:Entity.Hitbox, index:number): boolean {
-                if (obj == this) { index = index; return true;}
+            let found = Entity.Hitbox.hitboxList.find(function (obj: Entity.Hitbox, index: number): boolean {
+                if (obj == this) { index = index; return true; }
                 return false;
             });
 
@@ -65,7 +103,7 @@ namespace Entity {
                 Entity.Hitbox.hitboxList.splice(index, 1);
             }
         }
-        
+
         // Update
         // Updates hitbox display sprite position
         public update(): void {
@@ -94,7 +132,7 @@ namespace Entity {
         // Global update
         // Updates all hitbox display sprite positions
         public static globalUpdate(): void {
-            Entity.Hitbox.hitboxList.forEach(function(obj:Entity.Hitbox, index:number): void {
+            Entity.Hitbox.hitboxList.forEach(function (obj: Entity.Hitbox, index: number): void {
                 let valid = Entity.Hitbox.repair(index);
                 if (valid) obj.update();
             });

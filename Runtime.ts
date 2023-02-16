@@ -5,54 +5,55 @@ class Runtime {
     private static paintFuncs: Array<Runtime.RuntimeListener>;
     private static shadeFuncs: Array<Runtime.RuntimeListener>;
 
-    private static readonly maxIndex: number = 1024;
-    private static curIndex: number = 1;
-
-    private static updateDelta: Runtime.DeltaTime;
-    private static paintDelta: Runtime.DeltaTime;
-    private static shadeDelta: Runtime.DeltaTime;
-
     // Runtime should not be inherited from
-    private constructor() {}
+    private constructor() { }
 
     // Register a listener object
-    protected static register(listener: Runtime.RuntimeListener): number {
-        return 5;
+    public static register(listener: Runtime.RuntimeListener): void {
+        if (listener.getType() == Runtime.TickType.Update) {
+            Runtime.updateFuncs.push(listener);
+        } else if (listener.getType() == Runtime.TickType.Update) {
+            Runtime.paintFuncs.push(listener);
+        } else if ((listener.getType() == Runtime.TickType.Update)) {
+            Runtime.updateFuncs.push(listener);
+        }
     }
-    
-    // Get current index
-    public static getCurrentIndex(): number { return this.curIndex;}
 
-    // Resolve update type
-    
+    // Deregister a listener object
+    public static deregister(listener: Runtime.RuntimeListener): boolean {
+        if (listener.getType() == Runtime.TickType.Update) {
+            return Runtime.updateFuncs.removeElement(listener);
+        } else if (listener.getType() == Runtime.TickType.Update) {
+            return Runtime.paintFuncs.removeElement(listener);
+        } else if ((listener.getType() == Runtime.TickType.Update)) {
+            return Runtime.shadeFuncs.removeElement(listener);
+        }
+        return false;
+    }
+
     // Main initialization function
     public static main(): void {
         // Initialize
         if (!Runtime.initialized) {
             Runtime.updateFuncs = [];
             Runtime.paintFuncs = [];
+            Runtime.shadeFuncs = [];
 
-            let updateLt = Runtime.updateDelta.getLastUpdate();
-            let updateDt = Runtime.updateDelta.update();
-            game.onUpdate(function():void {
-                Runtime.updateFuncs.forEach(function(value:Runtime.RuntimeListener,index:number):void {
-                    value.execute(updateDt, updateLt);
+            game.onUpdate(function (): void {
+                Runtime.updateFuncs.forEach(function (value: Runtime.RuntimeListener, index: number): void {
+                    value.execute();
                 });
             });
 
-            let paintLt = Runtime.paintDelta.getLastUpdate();
-            let paintDt = Runtime.paintDelta.update();
-            game.onPaint(function(): void {
-                Runtime.paintFuncs.forEach(function (value: Runtime.RuntimeListener,index:number):void {
-                    value.execute(paintDt, paintLt);
+            game.onPaint(function (): void {
+                Runtime.paintFuncs.forEach(function (value: Runtime.RuntimeListener, index: number): void {
+                    value.execute();
                 });
             });
 
-            let shadeLt = Runtime.shadeDelta.getLastUpdate();
-            let shadeDt = Runtime.shadeDelta.update();
-            game.onShade(function(): void {
-                Runtime.shadeFuncs.forEach(function(value:Runtime.RuntimeListener,index:number):void {
-                    value.execute(shadeDt, shadeLt);
+            game.onShade(function (): void {
+                Runtime.shadeFuncs.forEach(function (value: Runtime.RuntimeListener, index: number): void {
+                    value.execute();
                 });
             });
 
@@ -62,30 +63,31 @@ class Runtime {
 }
 
 namespace Runtime {
-    export type tickFunction = (deltaTime: number, lastUpdate: number) => void
+    export type tickFunction = () => void
+
+    export enum TickType {
+        Update,
+        Paint,
+        Shade
+    }
 
     export class RuntimeListener {
-        private onTick: Runtime.tickFunction;
-        private tickType: string;
+        private tickFunction: Runtime.tickFunction;
+        private tickType: Runtime.TickType;
 
-        public constructor(tickType: string, tickFunction: Runtime.tickFunction) {
-            if (tickType == "update") {
-
-            } else if (tickType == "paint") {
-
-            } else if (tickType == "shade") {
-
-            }
+        public constructor(tickType: Runtime.TickType, tickFunction: Runtime.tickFunction) {
+            this.tickType = tickType;
+            this.tickFunction = tickFunction;
         }
 
-        public getFunction(): Runtime.tickFunction { return this.onTick;}
-        public getType(): string { return this.tickType;}
+        public getFunction(): Runtime.tickFunction { return this.tickFunction; }
+        public getType(): Runtime.TickType { return this.tickType; }
 
-        public setFunction(newFunction: Runtime.tickFunction): void { this.onTick = newFunction;}
-        public setType(newType: string) { this.tickType = newType;}
+        public setFunction(newFunction: Runtime.tickFunction): void { this.tickFunction = newFunction; }
+        public setType(newType: Runtime.TickType) { this.tickType = newType; }
 
-        public execute(deltaTime: number, lastUpdate: number): void {
-            this.onTick(deltaTime, lastUpdate);
+        public execute(): void {
+            this.tickFunction();
         }
     }
 
@@ -116,7 +118,7 @@ namespace Runtime {
         }
     }
 
-    
+
 }
 
 Runtime.main();
