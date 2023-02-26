@@ -9,23 +9,23 @@ class Runtime {
     private constructor() { }
 
     // Register a listener object
-    public static register(listener: Runtime.RuntimeListener): void {
+    public static register(listener:Runtime.RuntimeListener): void {
         if (listener.getType() == Runtime.TickType.Update) {
             Runtime.updateFuncs.push(listener);
-        } else if (listener.getType() == Runtime.TickType.Update) {
+        } else if (listener.getType() == Runtime.TickType.Paint) {
             Runtime.paintFuncs.push(listener);
-        } else if ((listener.getType() == Runtime.TickType.Update)) {
-            Runtime.updateFuncs.push(listener);
+        } else if ((listener.getType() == Runtime.TickType.Shade)) {
+            Runtime.shadeFuncs.push(listener);
         }
     }
 
     // Deregister a listener object
-    public static deregister(listener: Runtime.RuntimeListener): boolean {
+    public static deregister(listener:Runtime.RuntimeListener): boolean {
         if (listener.getType() == Runtime.TickType.Update) {
             return Runtime.updateFuncs.removeElement(listener);
-        } else if (listener.getType() == Runtime.TickType.Update) {
+        } else if (listener.getType() == Runtime.TickType.Paint) {
             return Runtime.paintFuncs.removeElement(listener);
-        } else if ((listener.getType() == Runtime.TickType.Update)) {
+        } else if ((listener.getType() == Runtime.TickType.Shade)) {
             return Runtime.shadeFuncs.removeElement(listener);
         }
         return false;
@@ -39,20 +39,20 @@ class Runtime {
             Runtime.paintFuncs = [];
             Runtime.shadeFuncs = [];
 
-            game.onUpdate(function (): void {
-                Runtime.updateFuncs.forEach(function (value: Runtime.RuntimeListener, index: number): void {
+            game.onUpdate(() => {
+                Runtime.updateFuncs.forEach((value:Runtime.RuntimeListener, index:number) => {
                     value.execute();
                 });
             });
 
-            game.onPaint(function (): void {
-                Runtime.paintFuncs.forEach(function (value: Runtime.RuntimeListener, index: number): void {
+            game.onPaint(() => {
+                Runtime.paintFuncs.forEach((value:Runtime.RuntimeListener, index:number) => {
                     value.execute();
                 });
             });
 
-            game.onShade(function (): void {
-                Runtime.shadeFuncs.forEach(function (value: Runtime.RuntimeListener, index: number): void {
+            game.onShade(() => {
+                Runtime.shadeFuncs.forEach((value:Runtime.RuntimeListener, index:number) => {
                     value.execute();
                 });
             });
@@ -63,7 +63,7 @@ class Runtime {
 }
 
 namespace Runtime {
-    export type tickFunction = () => void
+    export type tickFunction = () => void;
 
     export enum TickType {
         Update,
@@ -75,16 +75,16 @@ namespace Runtime {
         private tickFunction: Runtime.tickFunction;
         private tickType: Runtime.TickType;
 
-        public constructor(tickType: Runtime.TickType, tickFunction: Runtime.tickFunction) {
+        public constructor(tickType:Runtime.TickType, tickFunction:Runtime.tickFunction) {
             this.tickType = tickType;
             this.tickFunction = tickFunction;
         }
 
-        public getFunction(): Runtime.tickFunction { return this.tickFunction; }
-        public getType(): Runtime.TickType { return this.tickType; }
+        public getFunction(): Runtime.tickFunction { return this.tickFunction;}
+        public getType(): Runtime.TickType { return this.tickType;}
 
-        public setFunction(newFunction: Runtime.tickFunction): void { this.tickFunction = newFunction; }
-        public setType(newType: Runtime.TickType) { this.tickType = newType; }
+        public setFunction(newFunction: Runtime.tickFunction): void { this.tickFunction = newFunction;}
+        public setType(newType: Runtime.TickType) { this.tickType = newType;}
 
         public execute(): void {
             this.tickFunction();
