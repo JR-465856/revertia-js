@@ -1,46 +1,6 @@
 // Entity class
 abstract class Entity {
-    private hitbox: Entity.Hitbox;
-    private animations: Entity.Animation.IAnimationDictionary;
-
-    private doTick: boolean = false;
-    private tickAge: number = 0;
-
-    private static registeredEntities: Array<Entity>;
-
-    constructor() {
-        if (Entity.registeredEntities == undefined) { Entity.registeredEntities = [];}
-        Entity.registeredEntities.push(this);
-    }
-
-    //                  STATIC FUNCTIONS
-    // Find entity by hitbox sprite
-    public static findEntityByHitboxSprite(hitboxSprite:Sprite): Entity {
-        let result = Entity.registeredEntities.find((value:Entity, index:number) => {
-            return false;
-        });
-        return result ? result : null;
-    }
-
-    //                  HITBOX FUNCTIONS
-    // Creates the hitbox
-    // Don't ask why this isn't already done in the constructor
-    //   image:Image           - Display image for animations and decoration that will be attached to the hitbox
-    //   hitboxSize:Coordinate - Dimensions of the hitbox
-    //   hitboxSize:Coordinate - Offset of the display image from the hitbox
-    public initializeHitbox(displayImage:Image, hitboxSize:Coordinate, hitboxOffset:Coordinate) {
-        let hitbox = new Entity.Hitbox(Entity.Hitbox.createDisplaySprite(displayImage), hitboxSize, hitboxOffset);
-        this.hitbox = hitbox;
-    }
-    // Get hitbox
-    public getHitbox(): Entity.Hitbox { return this.hitbox;}
-
-    //                  GENERAL FUNCTIONS
-    // Deregisters and removes the entity
-    // Also removes the hitbox and display sprite (if the hitbox was initialized)
-    public destroy(): void {
-        
-    }
+    protected hitbox: Entity.Hitbox;
 }
 
 namespace Entity {
@@ -48,6 +8,7 @@ namespace Entity {
     export class Animation {
         private parent: Sprite;
         private images: Array<Image>;
+        private label: string;
 
         private flippedX: boolean = false;
         private flippedY: boolean = false;
@@ -55,15 +16,12 @@ namespace Entity {
         private interval = 500;
         private looping = false;
 
-        constructor() { }
+        constructor(label:string) {
+            this.label = label;
+        }
 
         public play() {
-            animation.runImageAnimation(
-                this.parent,
-                this.images,
-                this.interval,
-                this.looping
-            );
+
         }
 
         public getParent(): Sprite { return this.parent;}
@@ -83,11 +41,6 @@ namespace Entity {
         public setFlipX(flippedX:boolean): void { this.flippedX = flippedX;}
         public setFlipY(flippedY:boolean): void { this.flippedY = flippedY;}
     }
-    export namespace Animation {
-        export interface IAnimationDictionary {
-            [key: string]: Entity.Animation;
-        }
-    }
 
     // Hitbox
     export class Hitbox {
@@ -102,9 +55,9 @@ namespace Entity {
         private size: Coordinate;
 
         // Constructor
-        // parent:Sprite     - Sprite to attach to the hitbox for decoration
-        // size:Coordinate   - Size of the hitbox
-        // offset:Coordinate - Offset of the parent from the hitbox
+        // parent:Sprite     - The sprite to attach to the hitbox for decoration
+        // size:Coordinate   - The size of the hitbox
+        // offset:Coordinate -
         constructor(parent:Sprite, size:Coordinate, offset:Coordinate) {
             // Load hitbox hitboxList
             if (Entity.Hitbox.hitboxList == undefined) Entity.Hitbox.hitboxList = [];
@@ -131,35 +84,24 @@ namespace Entity {
         public getSize(): Coordinate { return this.size;}
         public getOffset(): Coordinate { return this.offset;}
         public setOffset(offset: Coordinate) { this.offset = offset;}
-        
+
         // Deregister
-        // Deregisters a Hitbox, no longer recognizing it in the static sense
-        // Returns true if the Hitbox could be deregistered, otherwise false
+        // Removes a Hitbox, no longer recognizing it in the static sense
         // WARNING: Must be called on removal or the class may become unstable!
-        //          To completely delete a hitbox, one should call deregister() and THEN remove()
-        public deregister(): boolean {
+        public deregister(): void {
             let index = -1;
-            let found = Entity.Hitbox.hitboxList.find((obj: Entity.Hitbox, index: number) => {
+            let found = Entity.Hitbox.hitboxList.find(function (obj: Entity.Hitbox, index: number): boolean {
                 if (obj == this) { index = index; return true; }
                 return false;
             });
 
-            if (index == -1) return false;
-            Entity.Hitbox.hitboxList.splice(index, 1);
-            return true;
-        }
-        
-        // Remove
-        // Destroys the boundary sprite while preserving the parent sprite
-        // Returns true if boundary sprite existed (and was subsequently removed), otherwise false
-        // WARNING: To completely delete a hitbox, one should call deregister() and THEN remove()
-        public remove(): boolean {
-            if (this.boundary) {
-                this.boundary.destroy();
-                this.boundary = null;
-                return true;
+            if (index == -1) {
+                // Theoretically this error should be impossible unless something
+                // is seriously wrong with the environment
+                throw "Cannot deregister a Hitbox that is not recognized in the static sense.";
+            } else {
+                Entity.Hitbox.hitboxList.splice(index, 1);
             }
-            return false;
         }
 
         // Update
@@ -169,15 +111,6 @@ namespace Entity {
             this.parent.y = this.boundary.y + this.offset.getY();
         }
 
-        // Creates a "display" sprite
-        // The sprite is only for visual effect and does not collide
-        // Meant to be used as a parent for a Hitbox
-        public static createDisplaySprite(displayImage:Image): Sprite {
-            let display = sprites.create(displayImage, Entity.Hitbox.displayKind);
-            display.setFlag(SpriteFlag.Ghost, true);
-            return display;
-        }
-        
         // Static repair (individual)
         // Removes hitbox at given index if it is invalid (improperly removed)
         // Returns true if the hitbox at the index was valid, otherwise false
