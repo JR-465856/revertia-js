@@ -3,13 +3,28 @@ abstract class Entity {
     private hitbox: Entity.Hitbox;
     private animations: Entity.Animation.IAnimationDictionary;
 
+    private static tickListener: Runtime.RuntimeListener;
     private doTick: boolean = false;
     private tickAge: number = 0;
 
     private static registeredEntities: Array<Entity>;
 
     constructor() {
+        // Intiialize registered entities
         if (Entity.registeredEntities == undefined) { Entity.registeredEntities = [];}
+        // Initialize tick listener
+        if (Entity.tickListener == undefined) {
+            Entity.tickListener = new Runtime.RuntimeListener(
+                Runtime.TickType.Update,
+                () => {
+                    Entity.registeredEntities.forEach((value:Entity, index:number) => {
+                        if (value.doTick) { value.tickAge += 1; value.onTick();}
+                    });
+                }
+            )
+            Runtime.register(Entity.tickListener);
+        }
+        // Register entity
         Entity.registeredEntities.push(this);
     }
 
@@ -70,9 +85,14 @@ abstract class Entity {
 
     //                  TICK FUNCTIONS
     // On tick
-    public onTick(): void {
-
-    }
+    // Runs every 0.05 seconds if doTick is true
+    // tickAge is incremented every time the entity ticks
+    // Meant to be overriden
+    public onTick(): void { }
+    // Other tick functions
+    public setDoTick(doTick:boolean): void { this.doTick = doTick;}
+    public getDoTick(): boolean { return this.doTick;}
+    public getTickAge(): number { return this.tickAge;}
 }
 
 namespace Entity {
