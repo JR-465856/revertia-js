@@ -36,10 +36,42 @@ abstract class Entity {
     public getHitbox(): Entity.Hitbox { return this.hitbox;}
 
     //                  GENERAL FUNCTIONS
+    // Finds the index of the entity in the entity registry
+    private getRegistryIndex(): number {
+        let index;
+        let result = Entity.registeredEntities.find((v:Entity, i:number) => {
+            index = i;
+            return v == this;
+        });
+        return result ? null : index;
+    }
+
     // Deregisters and removes the entity
     // Also removes the hitbox and display sprite (if the hitbox was initialized)
     public destroy(): void {
-        
+        if (this.hitbox) {
+            this.hitbox.deregister();
+            this.hitbox.remove();
+            this.hitbox.getParent().destroy();
+            this.hitbox = null;
+        }
+        let index = this.getRegistryIndex();
+        if (index != null) Entity.registeredEntities.splice(index, 1);
+    }
+
+    //                  PHYSICS FUNCTIONS
+    // Position, velocity, and acceleration
+    public setHitboxPosition(pos:Coordinate): void { this.hitbox.setPosition(pos);}
+    public getHitboxPosition(): Coordinate { return this.hitbox.getPosition();}
+    public setHitboxVelocity(vel:Coordinate): void { this.hitbox.setVelocity(vel);}
+    public getHitboxVelocity(): Coordinate { return this.hitbox.getVelocity();}
+    public setHitboxAcceleration(accel:Coordinate): void { this.hitbox.setAcceleration(accel);}
+    public getHitboxAcceleration(): Coordinate { return this.hitbox.getAcceleration();}
+
+    //                  TICK FUNCTIONS
+    // On tick
+    public onTick(): void {
+
     }
 }
 
@@ -130,7 +162,14 @@ namespace Entity {
         // Size and offset
         public getSize(): Coordinate { return this.size;}
         public getOffset(): Coordinate { return this.offset;}
-        public setOffset(offset: Coordinate) { this.offset = offset;}
+        public setOffset(offset:Coordinate): void { this.offset = offset;}
+        // Physics
+        public setPosition(pos:Coordinate): void { this.boundary.setPosition(pos.getX(), pos.getY());}
+        public getPosition(): Coordinate { return new Coordinate(this.boundary.x, this.boundary.y);}
+        public setVelocity(vel:Coordinate): void { this.boundary.setVelocity(vel.getX(), vel.getY());}
+        public getVelocity(): Coordinate { return new Coordinate(this.boundary.vx, this.boundary.vy);}
+        public setAcceleration(accel:Coordinate): void { this.boundary.ax = accel.getX(); this.boundary.ay = accel.getY();}
+        public getAcceleration(): Coordinate { return new Coordinate(this.boundary.ax, this.boundary.ay);}
         
         // Deregister
         // Deregisters a Hitbox, no longer recognizing it in the static sense
