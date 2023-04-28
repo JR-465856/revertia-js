@@ -1,0 +1,12 @@
+{
+    "image1": {
+        "data": "hwQQACAAAAA1MzMzMzMzU5mZmZmZmZmZWDMzMzMzM5WTmZmZmZOZmYg1MzMzM1OZk5mZMzM5mZmINTMzMzOVmZOZM5mZmZOZiFgzMzMzlZmTOZmZmZmTmYiINTMzU5mZM5OZmZk5mZmIiFYzM5WZmZOZmZmZOZmZiIhoNVOWmTmTmZmZmTmZmYiIaGVlmZk5k5mZmZmTmZmIiIhWZpmZk5OZmZmZk5mZiIhoZWWZmZOTmTkzmZOZmYiIVjNTlpmTOZmTOZmTmZmIiFYzM5WZkzmZkzk5mZmZiIg1MzOVmZOZkzOTOZmZmYhYMzMzU5mTmTOTmZOZmZmINTMzMzOVMzMzMzOZmZmZ",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "sampleEntityTexture"
+    },
+    "*": {
+        "mimeType": "image/x-mkcd-f4",
+        "dataEncoding": "base64",
+        "namespace": "myImages"
+    }
+}

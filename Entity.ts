@@ -9,8 +9,14 @@ abstract class Entity {
 
     private static registeredEntities: Array<Entity>;
 
+    // Constructor
+    // To create a working Entity:
+    // 1. Call super() in constructor once
+    // 2. Call initializeHitbox()
+    // 3. Override the onTick function and do setDoTick(true)
+    // To destroy a working Entity, do destroy()
     constructor() {
-        // Intiialize registered entities
+        // Initialize registered entities
         if (Entity.registeredEntities == undefined) { Entity.registeredEntities = [];}
         // Initialize tick listener
         if (Entity.tickListener == undefined) {
@@ -85,7 +91,7 @@ abstract class Entity {
 
     //                  TICK FUNCTIONS
     // On tick
-    // Runs every 0.05 seconds if doTick is true
+    // Runs every update if doTick is true
     // tickAge is incremented every time the entity ticks
     // Meant to be overriden
     public onTick(): void { }
@@ -144,8 +150,9 @@ namespace Entity {
     // Hitbox
     export class Hitbox {
         private static hitboxList: Array<Entity.Hitbox>;
-        private static hitboxKind: number = SpriteKind.create();
-        private static displayKind: number = SpriteKind.create();
+        private static hitboxListener: Runtime.RuntimeListener;
+        private static hitboxKind: number;
+        private static displayKind: number;
 
         private boundary: Sprite;
         private parent: Sprite;
@@ -158,8 +165,19 @@ namespace Entity {
         // size:Coordinate   - Size of the hitbox
         // offset:Coordinate - Offset of the parent from the hitbox
         constructor(parent:Sprite, size:Coordinate, offset:Coordinate) {
-            // Load hitbox hitboxList
+            // Initialize
             if (Entity.Hitbox.hitboxList == undefined) Entity.Hitbox.hitboxList = [];
+            if (Entity.Hitbox.hitboxKind == undefined) Entity.Hitbox.hitboxKind = SpriteKind.create();
+            if (Entity.Hitbox.displayKind == undefined) Entity.Hitbox.displayKind = SpriteKind.create();
+            if (Entity.Hitbox.hitboxListener == undefined) {
+                Entity.Hitbox.hitboxListener = new Runtime.RuntimeListener(
+                    Runtime.TickType.Paint,
+                    () => {
+                        Entity.Hitbox.globalUpdate();
+                    }
+                );
+                Runtime.register(Entity.Hitbox.hitboxListener);
+            }
 
             // Main properties
             this.offset = offset;
@@ -170,6 +188,7 @@ namespace Entity {
             let hitboxImage = image.create(this.size.getX(), this.size.getY());
             hitboxImage.fill(5);
             this.boundary = sprites.create(hitboxImage, Entity.Hitbox.hitboxKind);
+            this.boundary.setFlag(SpriteFlag.Invisible, true);
 
             // Register
             Entity.Hitbox.hitboxList.push(this);
@@ -265,3 +284,50 @@ namespace Entity {
         }
     }
 }
+
+
+
+
+
+// Sample entity
+const sw = screen.width;
+const sw2 = screen.width>>1;
+const sh = screen.height;
+const sh2 = screen.height>>1;
+class SampleEntity extends Entity {
+    constructor() {
+        super();
+        this.initializeHitbox(
+            img`
+                9 3 3 3 3 3 3 3 3 3 3 3 3 3 3 2
+                3 9 3 3 3 3 3 3 3 3 3 3 3 3 2 3
+                3 3 9 3 3 3 3 3 3 3 3 3 3 2 3 3
+                3 3 3 9 3 3 3 3 3 3 3 3 2 3 3 3
+                3 3 3 3 9 3 3 3 3 3 3 2 3 3 3 3
+                3 3 3 3 3 9 d 3 3 d 2 3 3 3 3 3
+                3 3 3 3 3 b 9 8 8 2 b 3 3 3 3 3
+                3 3 3 3 3 3 8 6 6 8 3 3 3 3 3 3
+                3 3 3 3 3 3 8 6 6 8 3 3 3 3 3 3
+                3 3 3 3 3 b 2 c c 9 b 3 3 3 3 3
+                3 3 3 3 3 2 c 3 3 c 9 3 3 3 3 3
+                3 3 3 3 2 3 3 3 3 3 3 9 3 3 3 3
+                3 3 3 2 3 3 3 3 3 3 3 3 9 3 3 3
+                3 3 2 3 3 3 3 3 3 3 3 3 3 9 3 3
+                3 2 3 3 3 3 3 3 3 3 3 3 3 3 9 3
+                2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 9
+            `,
+            new Coordinate(16, 16),
+            Coordinate.zero()
+        );
+        this.setDoTick(true);
+    }
+
+    public onTick() {
+        this.setHitboxPosition(new Coordinate(
+            Math.cos(this.getTickAge()/50)*sw2+sw2,
+            Math.sin(this.getTickAge()/50)*sh2+sh2
+        ));
+    }
+}
+
+let samp = new SampleEntity();

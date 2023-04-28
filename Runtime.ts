@@ -10,30 +10,7 @@ class Runtime {
 
     // Register a listener object
     public static register(listener:Runtime.RuntimeListener): void {
-        if (listener.getType() == Runtime.TickType.Update) {
-            Runtime.updateFuncs.push(listener);
-        } else if (listener.getType() == Runtime.TickType.Paint) {
-            Runtime.paintFuncs.push(listener);
-        } else if ((listener.getType() == Runtime.TickType.Shade)) {
-            Runtime.shadeFuncs.push(listener);
-        }
-    }
-
-    // Deregister a listener object
-    public static deregister(listener:Runtime.RuntimeListener): boolean {
-        if (listener.getType() == Runtime.TickType.Update) {
-            return Runtime.updateFuncs.removeElement(listener);
-        } else if (listener.getType() == Runtime.TickType.Paint) {
-            return Runtime.paintFuncs.removeElement(listener);
-        } else if ((listener.getType() == Runtime.TickType.Shade)) {
-            return Runtime.shadeFuncs.removeElement(listener);
-        }
-        return false;
-    }
-
-    // Main initialization function
-    public static main(): void {
-        // Initialize
+        // Initialize registry
         if (!Runtime.initialized) {
             Runtime.updateFuncs = [];
             Runtime.paintFuncs = [];
@@ -53,12 +30,32 @@ class Runtime {
 
             game.onShade(() => {
                 Runtime.shadeFuncs.forEach((value:Runtime.RuntimeListener, index:number) => {
-                    value.execute();
+                    value.execute()
                 });
             });
 
             Runtime.initialized = true;
         }
+        // Register the listener
+        if (listener.getType() == Runtime.TickType.Update) {
+            Runtime.updateFuncs.push(listener);
+        } else if (listener.getType() == Runtime.TickType.Paint) {
+            Runtime.paintFuncs.push(listener);
+        } else if ((listener.getType() == Runtime.TickType.Shade)) {
+            Runtime.shadeFuncs.push(listener);
+        }
+    }
+
+    // Deregister a listener object
+    public static deregister(listener:Runtime.RuntimeListener): boolean {
+        if (listener.getType() == Runtime.TickType.Update) {
+            return Runtime.updateFuncs.removeElement(listener);
+        } else if (listener.getType() == Runtime.TickType.Paint) {
+            return Runtime.paintFuncs.removeElement(listener);
+        } else if ((listener.getType() == Runtime.TickType.Shade)) {
+            return Runtime.shadeFuncs.removeElement(listener);
+        }
+        return false;
     }
 }
 
@@ -117,8 +114,4 @@ namespace Runtime {
             return this.lastUpdate;
         }
     }
-
-
 }
-
-Runtime.main();

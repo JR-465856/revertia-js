@@ -10,7 +10,9 @@
         "assets.json",
         "Entity.ts",
         "Coordinate.ts",
-        "Runtime.ts"
+        "Runtime.ts",
+        "images.g.jres",
+        "images.g.ts"
     ],
     "testFiles": [
         "test.ts"
