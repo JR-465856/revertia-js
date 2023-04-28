@@ -12,7 +12,8 @@
         "Coordinate.ts",
         "Runtime.ts",
         "images.g.jres",
-        "images.g.ts"
+        "images.g.ts",
+        "Map.ts"
     ],
     "testFiles": [
         "test.ts"
