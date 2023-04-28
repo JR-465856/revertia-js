@@ -5,7 +5,7 @@ abstract class Entity {
 
     private static tickListener: Runtime.RuntimeListener;
     private doTick: boolean = false;
-    private tickAge: number = 0;
+    private timeInit: number;
 
     private static registeredEntities: Array<Entity>;
 
@@ -24,13 +24,14 @@ abstract class Entity {
                 Runtime.TickType.Update,
                 () => {
                     Entity.registeredEntities.forEach((value:Entity, index:number) => {
-                        if (value.doTick) { value.tickAge += 1; value.onTick();}
+                        if (value.doTick) { value.onTick();}
                     });
                 }
             )
             Runtime.register(Entity.tickListener);
         }
         // Register entity
+        this.timeInit = game.runtime();
         Entity.registeredEntities.push(this);
     }
 
@@ -76,6 +77,7 @@ abstract class Entity {
             this.hitbox.getParent().destroy();
             this.hitbox = null;
         }
+        this.doTick = false;
         let index = this.getRegistryIndex();
         if (index != null) Entity.registeredEntities.splice(index, 1);
     }
@@ -95,10 +97,11 @@ abstract class Entity {
     // tickAge is incremented every time the entity ticks
     // Meant to be overriden
     public onTick(): void { }
-    // Other tick functions
+    // Set do tick
     public setDoTick(doTick:boolean): void { this.doTick = doTick;}
     public getDoTick(): boolean { return this.doTick;}
-    public getTickAge(): number { return this.tickAge;}
+    // Get age of Entity in ms
+    public getAge(): number { return game.runtime()-this.timeInit;}
 }
 
 namespace Entity {
@@ -323,11 +326,16 @@ class SampleEntity extends Entity {
     }
 
     public onTick() {
+        const t = this.getAge()/1000;
         this.setHitboxPosition(new Coordinate(
-            Math.cos(this.getTickAge()/50)*sw2+sw2,
-            Math.sin(this.getTickAge()/50)*sh2+sh2
+            Math.cos(t)*sw2+sw2,
+            Math.sin(t)*sh2+sh2
         ));
+        console.log(t%10)
     }
 }
 
-let samp = new SampleEntity();
+for (let i = 0; i < 6; i++) {
+    let samp = new SampleEntity();
+    pause(1000);
+}

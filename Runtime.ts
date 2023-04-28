@@ -21,7 +21,7 @@ class Runtime {
                     value.execute();
                 });
             });
-
+            
             game.onPaint(() => {
                 Runtime.paintFuncs.forEach((value:Runtime.RuntimeListener, index:number) => {
                     value.execute();
