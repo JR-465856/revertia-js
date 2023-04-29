@@ -13,7 +13,8 @@
         "Runtime.ts",
         "images.g.jres",
         "images.g.ts",
-        "Map.ts"
+        "Map.ts",
+        "Controls.ts"
     ],
     "testFiles": [
         "test.ts"
