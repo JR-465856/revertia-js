@@ -35,6 +35,25 @@
             this.y*length
         );
     }
+
+    // Maximum
+    public max(other:Coordinate): Coordinate {
+        return new Coordinate(
+            this.x > other.x ? this.x : other.x,
+            this.y > other.y ? this.y : other.y
+        );
+    }
+    // Minimum
+    public min(other: Coordinate): Coordinate {
+        return new Coordinate(
+            this.x < other.x ? this.x : other.x,
+            this.y < other.y ? this.y : other.y
+        );
+    }
+    // Clamp
+    public clamp(low:Coordinate, high:Coordinate): Coordinate {
+        return this.max(low).min(high);
+    }
     
     // Arithmetic
     public add(other:Coordinate): Coordinate {
