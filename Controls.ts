@@ -5,6 +5,23 @@ abstract class Controls {
 
     private constructor() { }
 
+    public static getPressed(buttonType:Controls.Button): boolean {
+        if (buttonType == Controls.Button.Right) {
+            return controller.right.isPressed();
+        } else if (buttonType == Controls.Button.Left) {
+            return controller.left.isPressed();
+        } else if (buttonType == Controls.Button.Down) {
+            return controller.down.isPressed();
+        } else if (buttonType == Controls.Button.Up) {
+            return controller.up.isPressed();
+        } else if (buttonType == Controls.Button.A) {
+            return controller.A.isPressed();
+        } else if (buttonType == Controls.Button.B) {
+            return controller.B.isPressed();
+        }
+        return false;
+    }
+
     public static register(func:Controls.ButtonFunction): void {
         // Initialize if Controls hasn't already
         if (!Controls.initialized) {

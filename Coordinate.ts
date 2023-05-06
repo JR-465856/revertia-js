@@ -13,6 +13,10 @@
     // Get x and y
     public getX(): number { return this.x;}
     public getY(): number { return this.y;}
+    // Set x and y
+    // Returns a copy of the Coordinate
+    public setX(x:number): Coordinate { return new Coordinate(x, this.y);}
+    public setY(y:number): Coordinate { return new Coordinate(this.x, y);}
 
     // Get length (vector)
     public getLength(): number { return Math.sqrt((this.x*this.x)+(this.y*this.y));}
