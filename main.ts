@@ -75,15 +75,12 @@ class VisualEffect extends Entity {
         VisualEffect.vfxRegistry.removeElement(this);
     }
 
-    public setPosition(pos: Coordinate): void { this.pos = pos; }
+    public setPosition(pos:Coordinate): void { this.pos = pos; }
     public getPosition(): Coordinate { return this.pos; }
 }
 
 // Firefly Entity
 class Firefly extends VisualEffect {
-    private static sw: number = screen.width;
-    private static sh: number = screen.height;
-    private static sd: Coordinate = new Coordinate(Firefly.sw, Firefly.sh);
     private rand: Math.FastRandom;
 
     constructor() {
@@ -97,12 +94,68 @@ class Firefly extends VisualEffect {
     }
 
     public onTick() {
-        let newPos = this.getPosition().add(new Coordinate(
+        const newPos = this.getPosition().add(new Coordinate(
             this.rand.randomRange(-1, 1),
             this.rand.randomRange(-1, 1)
-        )).clamp(Coordinate.zero(), Firefly.sd);
+        ));
         this.setPosition(newPos);
     }
+}
+
+// Firefly emitter
+class FireflyEmitter extends Entity {
+    private activeFireflies: Array<Firefly>;
+
+    private pos: Coordinate;
+    private radius: number;
+    private maxFireflies: number;
+    private spawnRate: number;
+
+    private spawnDeadline: number;
+
+    // Constructor
+    // Spawn rate is in fireflies per second
+    constructor(pos:Coordinate, radius:number, maxFireflies:number, spawnRate:number) {
+        super();
+
+        this.pos = pos;
+        this.radius = radius;
+        this.maxFireflies = maxFireflies;
+        this.spawnRate = 1000/spawnRate;
+
+        this.activeFireflies = [];
+        this.spawnDeadline = 0;
+
+        this.setDoTick(true);
+    }
+    
+    public onTick() {
+        if ((this.spawnDeadline-game.runtime()) > 0) return;
+        this.spawnDeadline = game.runtime()+this.spawnRate;
+
+        const firefly = new Firefly();
+
+        const a = Math.random()*6.283;
+        const r = this.radius*Math.sqrt(Math.random())
+        const newPos = this.pos.add(new Coordinate(
+            r*Math.cos(a),
+            r*Math.sin(a)
+        ));
+
+        firefly.setPosition(newPos);
+        this.activeFireflies.push(firefly);
+
+        if (this.activeFireflies.length > this.maxFireflies) this.activeFireflies.shift().destroy();
+    }
+
+    public setPosition(pos:Coordinate): void { this.pos = pos;}
+    public getPosition(): Coordinate { return this.pos;}
+
+    public setRadius(radius: number): void { this.radius = radius;}
+    public getRadius(): number { return this.radius;}
+
+    public setMaxFireflies(maxFireflies: number): void { this.maxFireflies = maxFireflies;}
+    public getMaxFireflies(): number { return this.maxFireflies;}
 }
 
 
@@ -111,18 +164,21 @@ class Firefly extends VisualEffect {
 
 // Create sample entities
 control.runInParallel(() => {
-    for (let i = 0; i < 6; i++) {
-        let samp = new SampleEntity();
+    let i;
+    for (i = 0; i < 6; i++) {
+        new SampleEntity();
         pause(1000);
     }
 
-    for (let i = 0; i < 15; i++) {
-        let vfxtest = new Firefly();
+    for (i = 0; i < 15; i++) {
+        const vfxtest = new Firefly();
         vfxtest.setPosition(new Coordinate(Math.randomRange(0, screen.width), screen.height - 1));
     }
 })
 
 // Set tilemap
-let mapBeginning = new Map.Level(tilemap`mapBeginning`);
+const mapBeginning =new Map.Level(tilemap`mapBeginning`);
 Map.setLevel(mapBeginning);
-Player.getEntity().setHitboxPosition(new Coordinate(50, 50));
+Player.getEntity().setHitboxPosition(new Coordinate(2<<4, 25<<4));
+
+const emitter1 = new FireflyEmitter(Player.getEntity().getHitboxPosition(), 16, 10, 0.5);

@@ -23,7 +23,7 @@ abstract class Entity {
             Entity.tickListener = new Runtime.RuntimeListener(
                 Runtime.TickType.Update,
                 () => {
-                    Entity.registeredEntities.forEach((value:Entity, index:number) => {
+                    Entity.registeredEntities.forEach(value => {
                         if (value.doTick) { value.onTick();}
                     });
                 }
@@ -39,9 +39,7 @@ abstract class Entity {
     //                  STATIC FUNCTIONS
     // Find entity by hitbox sprite
     public static findEntityByHitboxSprite(hitboxSprite:Sprite): Entity {
-        let result = Entity.registeredEntities.find((value:Entity, index:number) => {
-            return false;
-        });
+        const result = Entity.registeredEntities.find(value => value.getHitbox().getSprite() == hitboxSprite);
         return result ? result : null;
     }
 
@@ -52,8 +50,7 @@ abstract class Entity {
     //   hitboxSize:Coordinate - Dimensions of the hitbox
     //   hitboxSize:Coordinate - Offset of the display image from the hitbox
     public initializeHitbox(displayImage:Image, hitboxSize:Coordinate, hitboxOffset:Coordinate) {
-        let hitbox = new Entity.Hitbox(Entity.Hitbox.createDisplaySprite(displayImage), hitboxSize, hitboxOffset);
-        this.hitbox = hitbox;
+        this.hitbox = new Entity.Hitbox(Entity.Hitbox.createDisplaySprite(displayImage), hitboxSize, hitboxOffset);
     }
     // Get hitbox
     public getHitbox(): Entity.Hitbox { return this.hitbox;}
@@ -62,7 +59,7 @@ abstract class Entity {
     // Finds the index of the entity in the entity registry
     private getRegistryIndex(): number {
         let index;
-        let result = Entity.registeredEntities.find((v:Entity, i:number) => {
+        const result = Entity.registeredEntities.find((v:Entity, i:number) => {
             index = i;
             return v == this;
         });
@@ -85,7 +82,7 @@ abstract class Entity {
             this.hitbox = null;
         }
         this.doTick = false;
-        let index = this.getRegistryIndex();
+        const index = this.getRegistryIndex();
         if (index != null) Entity.registeredEntities.splice(index, 1);
     }
 
@@ -220,7 +217,7 @@ namespace Entity {
             this.parent = parent;
 
             // Hitbox sprite
-            let hitboxImage = image.create(this.size.getX(), this.size.getY());
+            const hitboxImage = image.create(this.size.getX(), this.size.getY());
             hitboxImage.fill(5);
             this.boundary = sprites.create(hitboxImage, Entity.Hitbox.hitboxKind);
             this.boundary.setFlag(SpriteFlag.Invisible, true);
@@ -251,15 +248,7 @@ namespace Entity {
         // WARNING: Must be called on removal or the class may become unstable!
         //          To completely delete a hitbox, one should call deregister() and THEN remove()
         public deregister(): boolean {
-            let index = -1;
-            let found = Entity.Hitbox.hitboxList.find((obj: Entity.Hitbox, index: number) => {
-                if (obj == this) { index = index; return true; }
-                return false;
-            });
-
-            if (index == -1) return false;
-            Entity.Hitbox.hitboxList.splice(index, 1);
-            return true;
+            return Entity.Hitbox.hitboxList.removeElement(this);
         }
         
         // Remove
@@ -286,7 +275,7 @@ namespace Entity {
         // The sprite is only for visual effect and does not collide
         // Meant to be used as a parent for a Hitbox
         public static createDisplaySprite(displayImage:Image): Sprite {
-            let display = sprites.create(displayImage, Entity.Hitbox.displayKind);
+            const display = sprites.create(displayImage, Entity.Hitbox.displayKind);
             display.setFlag(SpriteFlag.Ghost, true);
             return display;
         }
@@ -295,7 +284,7 @@ namespace Entity {
         // Removes hitbox at given index if it is invalid (improperly removed)
         // Returns true if the hitbox at the index was valid, otherwise false
         public static repair(index:number): boolean {
-            let obj = Entity.Hitbox.hitboxList[index];
+            const obj = Entity.Hitbox.hitboxList[index];
             if ((obj == null) || (obj == undefined)) {
                 Entity.Hitbox.hitboxList.splice(index, 1);
                 return false;
@@ -312,8 +301,8 @@ namespace Entity {
         // Global update
         // Updates all hitbox display sprite positions
         public static globalUpdate(): void {
-            Entity.Hitbox.hitboxList.forEach((obj: Entity.Hitbox, index: number) => {
-                let valid = Entity.Hitbox.repair(index);
+            Entity.Hitbox.hitboxList.forEach((obj:Entity.Hitbox, index:number) => {
+                const valid = Entity.Hitbox.repair(index);
                 if (valid) obj.update();
             });
         }

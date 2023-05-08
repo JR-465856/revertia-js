@@ -57,7 +57,7 @@ class PlayerEntity extends Entity {
 
         // Idle
         this.isIdling = false;
-        let idleAnim = new Entity.Animation();
+        const idleAnim = new Entity.Animation();
         idleAnim.setParent(this.getHitbox().getParent());
         idleAnim.setFrames(assets.animation`playerIdle`);
         idleAnim.setInterval(500);
@@ -65,21 +65,21 @@ class PlayerEntity extends Entity {
         this.registerAnimation("idle", idleAnim);
         // Walk
         this.isWalking = false;
-        let walkAnim = new Entity.Animation();
+        const walkAnim = new Entity.Animation();
         walkAnim.setParent(this.getHitbox().getParent());
         walkAnim.setFrames(assets.animation`playerWalk`);
         walkAnim.setInterval(200);
         walkAnim.setLooping(true);
         this.registerAnimation("walk", walkAnim);
         // Jump
-        let jumpAnim = new Entity.Animation();
+        const jumpAnim = new Entity.Animation();
         jumpAnim.setParent(this.getHitbox().getParent());
         jumpAnim.setFrames(assets.animation`playerJump`);
         jumpAnim.setInterval(100);
         jumpAnim.setLooping(false);
         this.registerAnimation("jump", jumpAnim);
         // Land
-        let landAnim = new Entity.Animation();
+        const landAnim = new Entity.Animation();
         landAnim.setParent(this.getHitbox().getParent());
         landAnim.setFrames(assets.animation`playerLand`);
         landAnim.setInterval(150);
@@ -101,10 +101,10 @@ class PlayerEntity extends Entity {
         if (Controls.getPressed(Controls.Button.Left) && Controls.getPressed(Controls.Button.Right)) {
             this.setHitboxVelocity(this.getHitboxVelocity().setX(0));
         } else if (Controls.getPressed(Controls.Button.Left)) {
-            let vx = Player.getMovementSpeed().getX()*-1;
+            const vx = Player.getMovementSpeed().getX()*-1;
             this.setHitboxVelocity(this.getHitboxVelocity().setX(vx));
         } else if (Controls.getPressed(Controls.Button.Right)) {
-            let vx = Player.getMovementSpeed().getX();
+            const vx = Player.getMovementSpeed().getX();
             this.setHitboxVelocity(this.getHitboxVelocity().setX(vx));
         } else {
             this.setHitboxVelocity(this.getHitboxVelocity().setX(0));
@@ -112,7 +112,7 @@ class PlayerEntity extends Entity {
 
         // Jumping
         if (Controls.getPressed(Controls.Button.Up) && this.getHitbox().getSprite().isHittingTile(CollisionDirection.Bottom)) {
-            let vy = Player.getMovementSpeed().getY();
+            const vy = Player.getMovementSpeed().getY();
             this.setHitboxVelocity(this.getHitboxVelocity().setY(vy));
             this.playAnimation("jump");
             this.isIdling = false;
@@ -131,8 +131,8 @@ class PlayerEntity extends Entity {
         }
 
         // Camera
-        let playerCam = Player.getCamera();
-        let camOffset = this.getHitboxPosition().sub(playerCam.getPosition()).scale(0.3);
+        const playerCam = Player.getCamera();
+        const camOffset = this.getHitboxPosition().sub(playerCam.getPosition()).scale(0.3);
         playerCam.setPosition(playerCam.getPosition().add(camOffset));
     }
 }

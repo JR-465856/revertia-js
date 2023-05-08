@@ -10,7 +10,7 @@ class Camera {
                 Runtime.TickType.Paint,
                 () => {
                     if (Camera.currentCamera != undefined) {
-                        let camPos = Camera.currentCamera.getPosition();
+                        const camPos = Camera.currentCamera.getPosition();
                         scene.centerCameraAt(
                             Math.floor(camPos.getX()),
                             Math.floor(camPos.getY())
