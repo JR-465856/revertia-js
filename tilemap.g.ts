@@ -29,13 +29,13 @@ namespace myTiles {
     //% fixedInstance jres blockIdentity=images._tile
     export const tile15 = image.ofBuffer(hex``);
     //% fixedInstance jres blockIdentity=images._tile
-    export const tile7 = image.ofBuffer(hex``);
-    //% fixedInstance jres blockIdentity=images._tile
     export const tile9 = image.ofBuffer(hex``);
     //% fixedInstance jres blockIdentity=images._tile
     export const tile16 = image.ofBuffer(hex``);
     //% fixedInstance jres blockIdentity=images._tile
     export const tile17 = image.ofBuffer(hex``);
+    //% fixedInstance jres blockIdentity=images._tile
+    export const tile7 = image.ofBuffer(hex``);
 
     helpers._registerFactory("tilemap", function(name: string) {
         switch(helpers.stringTrim(name)) {
@@ -126,14 +126,14 @@ namespace myTiles {
             case "tile4":return tile4;
             case "spawnRevermossBeast":
             case "tile15":return tile15;
-            case "playerStart":
-            case "tile7":return tile7;
             case "spawnCaveMonster":
             case "tile9":return tile9;
             case "emitterRevermossFirefly":
             case "tile16":return tile16;
             case "spawnCorruptionSerpent":
             case "tile17":return tile17;
+            case "playerStart":
+            case "tile7":return tile7;
         }
         return null;
     })
