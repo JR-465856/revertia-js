@@ -6,18 +6,26 @@ abstract class Controls {
     private constructor() { }
 
     public static getPressed(buttonType:Controls.Button): boolean {
-        if (buttonType == Controls.Button.Right) {
-            return controller.right.isPressed();
-        } else if (buttonType == Controls.Button.Left) {
-            return controller.left.isPressed();
-        } else if (buttonType == Controls.Button.Down) {
-            return controller.down.isPressed();
-        } else if (buttonType == Controls.Button.Up) {
-            return controller.up.isPressed();
-        } else if (buttonType == Controls.Button.A) {
-            return controller.A.isPressed();
-        } else if (buttonType == Controls.Button.B) {
-            return controller.B.isPressed();
+        switch(buttonType) {
+            case Controls.Button.Right:
+                return controller.right.isPressed();
+                break;
+            case Controls.Button.Left:
+                return controller.left.isPressed();
+                break;
+            case Controls.Button.Down:
+                return controller.down.isPressed();
+                break;
+            case Controls.Button.Up:
+                return controller.up.isPressed();
+                break;
+            case Controls.Button.A:
+                return controller.A.isPressed();
+                break;
+            case Controls.Button.B:
+                return controller.B.isPressed();
+                break;
+
         }
         return false;
     }

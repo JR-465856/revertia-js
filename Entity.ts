@@ -87,9 +87,12 @@ abstract class Entity {
     }
 
     //                  PHYSICS FUNCTIONS
-    // Position, velocity, and acceleration
+    // Position
     public setHitboxPosition(pos:Coordinate): void { this.hitbox.setPosition(pos);}
+    public setHitboxPositionTopLeft(pos:Coordinate): void { this.hitbox.setPositionTopLeft(pos);}
     public getHitboxPosition(): Coordinate { return this.hitbox.getPosition();}
+    public getHitboxPositionTopLeft(): Coordinate { return this.hitbox.getPositionTopLeft();}
+    // Velocity and acceleration
     public setHitboxVelocity(vel:Coordinate): void { this.hitbox.setVelocity(vel);}
     public getHitboxVelocity(): Coordinate { return this.hitbox.getVelocity();}
     public setHitboxAcceleration(accel:Coordinate): void { this.hitbox.setAcceleration(accel);}
@@ -234,9 +237,18 @@ namespace Entity {
         public getSize(): Coordinate { return this.size;}
         public getOffset(): Coordinate { return this.offset;}
         public setOffset(offset:Coordinate): void { this.offset = offset;}
-        // Physics
+        // Position
         public setPosition(pos:Coordinate): void { this.boundary.setPosition(pos.getX(), pos.getY());}
+        public setPositionTopLeft(pos:Coordinate): void {
+            const newPos = pos.add(this.size.scale(0.5));
+            this.boundary.setPosition(newPos.getX(), newPos.getY());
+        }
         public getPosition(): Coordinate { return new Coordinate(this.boundary.x, this.boundary.y);}
+        public getPositionTopLeft(): Coordinate {
+            const boundaryPos = new Coordinate(this.boundary.x, this.boundary.y);
+            return boundaryPos.add(this.size.scale(0.5));
+        }
+        // Velocity and acceleration
         public setVelocity(vel:Coordinate): void { this.boundary.setVelocity(vel.getX(), vel.getY());}
         public getVelocity(): Coordinate { return new Coordinate(this.boundary.vx, this.boundary.vy);}
         public setAcceleration(accel:Coordinate): void { this.boundary.ax = accel.getX(); this.boundary.ay = accel.getY();}

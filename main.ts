@@ -162,23 +162,33 @@ class FireflyEmitter extends Entity {
 
 
 
-// Create sample entities
-control.runInParallel(() => {
-    let i;
-    for (i = 0; i < 6; i++) {
-        new SampleEntity();
-        pause(1000);
-    }
+// Behaviors
+{
+    const playerStart = new Map.TileBehavior(assets.tile`playerStart`, location => {
+        const spawnLocation = Map.mapPosToStandardPosCenter(location);
+        Player.getEntity().setHitboxPosition(spawnLocation);
+        Player.getCamera().setPosition(spawnLocation);
+        Map.setTransparencyAtMapPos(location);
+    });
+    playerStart.register();
 
-    for (i = 0; i < 15; i++) {
-        const vfxtest = new Firefly();
-        vfxtest.setPosition(new Coordinate(Math.randomRange(0, screen.width), screen.height - 1));
-    }
-})
+    const emitterFirefly = new Map.TileBehavior(assets.tile`emitterFirefly`, location => {
+        const spawnLocation = Map.mapPosToStandardPosCenter(location);
+        
+        Map.setTransparencyAtMapPos(location);
+    });
+}
 
-// Set tilemap
-const mapBeginning =new Map.Level(tilemap`mapBeginning`);
-Map.setLevel(mapBeginning);
-Player.getEntity().setHitboxPosition(new Coordinate(2<<4, 25<<4));
+// Levels
+const levelBeginning = new Map.Level(
+    tilemap`mapBeginning`,
+    img`1`,
+    Map.getDefaultLoadOrder()
+);
+const levelEntityDemo = new Map.Level(
+    tilemap`mapEntityDemo`,
+    img`1`,
+    Map.getDefaultLoadOrder()
+);
 
-const emitter1 = new FireflyEmitter(Player.getEntity().getHitboxPosition(), 16, 10, 0.5);
+Map.loadLevel(levelEntityDemo);
