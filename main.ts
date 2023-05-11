@@ -174,9 +174,10 @@ class FireflyEmitter extends Entity {
 
     const emitterFirefly = new Map.TileBehavior(assets.tile`emitterFirefly`, location => {
         const spawnLocation = Map.mapPosToStandardPosCenter(location);
-        
+        const fireflyEmitter = new FireflyEmitter(spawnLocation, 32, 16, 2);
         Map.setTransparencyAtMapPos(location);
     });
+    emitterFirefly.register();
 }
 
 // Levels
